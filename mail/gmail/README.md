@@ -43,8 +43,16 @@ Thunderbird redirects me to `accounts.google.com` so I can get authenticated, an
 - Add a breaking point to read the value of the variable suppressed in the logs in the current scope. 
 ![alt scope](https://github.com/pzolo85/research/blob/f3407b3f0bbf6befcb6dc7ef7ac88bd0763a10be/images/gmail_009_debugger_breakpoint_read_auth.png)
 
-- Base64 decode the token, and print the byte value of the result to look at the separators (`\0x01`).
-![alt decode](https://github.com/pzolo85/research/blob/f3407b3f0bbf6befcb6dc7ef7ac88bd0763a10be/images/gmail_010_decode_auth_format.png)
+- Base64 decode the token, and print the byte value of the result (fields are separated and terminated with Control+A: \001)
+```
+$ echo "dXNlcj1nYX[]...]MTcxAQE=" | base64 -d | xxd -c 32
+00000000: 7573 6572 3d67 6172 6369 616f 6b65 6c6c 7964 6176 6973 6d40 676d 6169 6c2e 636f  user=garciaokellydavism@gmail.co
+00000020: 6d01 6175 7468 3d42 6561 7265 7220 7961 3239 2e61 3041 6435 324e 335f 4c6d 6547  m.auth=Bearer ya29.a0Ad52N3_LmeG
+[...]
+000000e0: 5953 4152 4153 4651 4847 5832 4d69 3133 4745 5944 354e 6c7a 6676 757a 3874 5739  YSARASFQHGX2Mi13GEYD5Nlzfvuz8tW9
+00000100: 314e 4651 3031 3731 0101                                                         1NFQ0171..
+```
+The format is documented in: https://developers.google.com/gmail/imap/xoauth2-protocol#initial_client_response 
 
 ## Implement in Go 
 
