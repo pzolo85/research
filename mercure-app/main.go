@@ -31,6 +31,15 @@ func main() {
 	e.HideBanner = true
 	e.HidePort = true
 
+	// create a sign a mercure claim that allows to publish on any topic
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"mercure": map[string][]string{
+			"publish": {"*"},
+		},
+	})
+	token, err := t.SignedString([]byte(key))
+	fail(err)
+
 	mercureHub, err := mercure.NewHub(
 		mercure.WithAnonymous(), // allow subscribers without JWT
 		mercure.WithPublisherJWT([]byte(key), jwt.SigningMethodHS256.Name), // JWT key for publisher JWT
@@ -60,21 +69,12 @@ func main() {
 		var msg Msg
 		err := c.Bind(&msg)
 		fail(err)
-		data := fmt.Sprintf("data=%s&id&type=%s&retry=&topic=%s", url.QueryEscape(msg.Msg), msg.Type, msg.To)
 		if msg.Type == "global" {
-			data = fmt.Sprintf("data=%s&id&type=global&retry=&topic=global", url.QueryEscape(msg.Msg))
+			msg.To = "global"
 		}
+		data := fmt.Sprintf("data=%s&id&type=%s&retry=&topic=%s", url.QueryEscape(msg.Msg), msg.Type, msg.To)
 
 		bodyReader := strings.NewReader(data)
-
-		// create a sign a mercure claim that allows to publish on any topic
-		t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-			"mercure": map[string][]string{
-				"publish": {"*"},
-			},
-		})
-		token, err := t.SignedString([]byte(key))
-		fail(err)
 
 		w := c.Response().Writer
 		r, err := http.NewRequest(
