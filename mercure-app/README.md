@@ -100,3 +100,5 @@ $curl -H 'content-type:application/json' localhost:9999/pub/messages -d '{"type"
 ```
 
 ## Client result
+
+![alt browser_out](https://raw.githubusercontent.com/pzolo85/research/refs/heads/main/images/mercure-app.png)
