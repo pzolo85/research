@@ -45,7 +45,7 @@ function attachEvent(es, t, node) {
 ```
 ![alt browser_out](https://raw.githubusercontent.com/pzolo85/research/refs/heads/main/images/mercure-app.png)
 
-# Backed application
+# Backend application
 
 ## The Hub
 
